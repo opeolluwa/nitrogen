@@ -1,0 +1,13 @@
+[package]
+name = "nitrogen"
+version = "0.1.0"
+edition = "2021"
+authors =["Adeoye Adefemi <adefemiadeoye@yahoo.com>"]
+description = "Notrogen is a basic authentication server/Template built in Rust to handle creation of accounts, login, and password reset amongst other features."
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dotenv = "0.15.0"
+mongodb = "2.3.0"
+serde = { version = "1.0.144", features = ["derive"] }
+tokio = { version = "1.20.1", features = ["full"] }
