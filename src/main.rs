@@ -4,6 +4,9 @@ use mongodb::{bson::doc, options::ClientOptions, Client};
 use std::env;
 use std::net::SocketAddr;
 
+//local modules
+mod routes;
+mod shared;
 #[tokio::main]
 async fn main() -> mongodb::error::Result<()> {
     //try reading the environment variables
