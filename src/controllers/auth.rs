@@ -9,7 +9,7 @@ pub struct Person {
 }
 
 //sign up
-pub async fn new(Json(payload): Json<User>) -> impl IntoResponse {
+pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
     let res = ApiResponse::<User> {
         success: true,
         message: "user created".to_string(),

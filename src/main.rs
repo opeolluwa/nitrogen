@@ -1,13 +1,11 @@
-use axum::{
-    routing::{get, post},
-    Router,
-};
+use axum::Router;
 use dotenv;
 use mongodb::{bson::doc, options::ClientOptions, Client};
 use std::env;
 use std::net::SocketAddr;
 
 //local modules
+mod controllers;
 mod routes;
 mod shared;
 
@@ -28,9 +26,7 @@ async fn main() -> mongodb::error::Result<()> {
     println!("Successfully Connected to Database.");
 
     //mount the application routes
-    let app = Router::new()
-        .route("/", get(|| async { "Hello, World!" }))
-        .route("/auth/sign-up", post(routes::sign_up::new));
+    let app = Router::new().nest("/v1/", routes::root::router());
 
     //mount the server
     let port = env::var("PORT")
