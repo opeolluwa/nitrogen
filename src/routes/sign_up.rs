@@ -1,12 +1,14 @@
 use crate::shared::api_response::ApiResponse;
-use axum::Json;
+use axum::{Json, response::IntoResponse};
+use serde::{Serialize, Deserialize};
 
+#[derive(Debug, Serialize,Deserialize)]
 pub struct Person {
     pub name: String,
     pub age: u32,
 }
 
-pub fn sign_up() -> Json<ApiResponse<Person>> {
+pub async fn sign_up() -> impl IntoResponse {
     let pete = Person {
         name: "Peter".to_string(),
         age: 34,

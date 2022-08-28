@@ -7,6 +7,9 @@ use std::net::SocketAddr;
 //local modules
 mod routes;
 mod shared;
+use crate::routes::sign_up;
+use sign_up::sign_up;
+
 #[tokio::main]
 async fn main() -> mongodb::error::Result<()> {
     //try reading the environment variables
@@ -24,7 +27,9 @@ async fn main() -> mongodb::error::Result<()> {
     println!("Successfully Connected to Database.");
 
     //mount the application routes
-    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+    let app = Router::new()
+        .route("/", get(|| async { "Hello, World!" }))
+        .route("/auth/sign-up", get(sign_up));
 
     //mount the server
     let port = env::var("PORT")
