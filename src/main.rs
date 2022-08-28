@@ -30,7 +30,7 @@ async fn main() -> mongodb::error::Result<()> {
     //mount the application routes
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
-        .route("/auth/sign-up", post(routes::sign_up));
+        .route("/auth/sign-up", post(routes::sign_up::new));
 
     //mount the server
     let port = env::var("PORT")
