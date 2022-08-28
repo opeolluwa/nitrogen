@@ -1,6 +1,8 @@
+use axum::{routing::get, Router};
 use dotenv;
 use mongodb::{bson::doc, options::ClientOptions, Client};
 use std::env;
+use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() -> mongodb::error::Result<()> {
@@ -17,6 +19,22 @@ async fn main() -> mongodb::error::Result<()> {
         .run_command(doc! {"ping": 1}, None)
         .await?;
     println!("Successfully Connected to Database.");
+
+    //mount the application routes
+    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+
+    //mount the server
+    let port = env::var("PORT")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(8052);
+    let ip_address = SocketAddr::from(([127, 0, 0, 1], port));
+    println!("Ignition started on http://{}", &ip_address);
+
+    axum::Server::bind(&ip_address)
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
 
     Ok(())
 }
