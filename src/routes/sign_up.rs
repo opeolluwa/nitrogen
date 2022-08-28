@@ -1,8 +1,8 @@
 use crate::shared::api_response::ApiResponse;
-use axum::{Json, response::IntoResponse};
-use serde::{Serialize, Deserialize};
+use axum::{response::IntoResponse, Json};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize,Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Person {
     pub name: String,
     pub age: u32,

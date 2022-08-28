@@ -7,8 +7,8 @@ use std::net::SocketAddr;
 //local modules
 mod routes;
 mod shared;
-use crate::routes::sign_up;
-use sign_up::sign_up;
+// use crate::routes::sign_up;
+// use sign_up::sign_up;
 
 #[tokio::main]
 async fn main() -> mongodb::error::Result<()> {
@@ -29,7 +29,7 @@ async fn main() -> mongodb::error::Result<()> {
     //mount the application routes
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
-        .route("/auth/sign-up", get(sign_up));
+        .route("/auth/sign-up", get(routes::sign_up));
 
     //mount the server
     let port = env::var("PORT")
