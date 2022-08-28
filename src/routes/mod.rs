@@ -1,5 +1,5 @@
 // pub mod sign_up;
-use crate::shared::api_response::ApiResponse;
+use crate::shared::{api_response::ApiResponse, user_schema::User};
 use axum::{response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 
@@ -9,16 +9,12 @@ pub struct Person {
     pub age: u32,
 }
 
-pub async fn sign_up() -> impl IntoResponse {
-    let pete = Person {
-        name: "Peter".to_string(),
-        age: 34,
-    };
-
-    let res = ApiResponse::<Person> {
+//sign up
+pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
+    let res = ApiResponse::<User> {
         success: true,
         message: "user created".to_string(),
-        payload: Some(pete),
+        data: Some(payload),
         error: None,
         status_code: Some(200),
     };
