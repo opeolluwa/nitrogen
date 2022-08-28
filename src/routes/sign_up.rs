@@ -1,3 +1,4 @@
+// pub mod sign_up;
 use crate::shared::api_response::ApiResponse;
 use axum::{response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
@@ -13,7 +14,8 @@ pub async fn sign_up() -> impl IntoResponse {
         name: "Peter".to_string(),
         age: 34,
     };
-    let res = ApiResponse::<Person> {
+
+    let mut res = ApiResponse::<Person> {
         success: true,
         message: "user created".to_string(),
         payload: Some(pete),
