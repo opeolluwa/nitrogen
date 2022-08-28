@@ -10,3 +10,24 @@ pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
         "data":Some(payload)
     }))
 }
+
+///login a new user
+pub async fn login(Json(payload): Json<User>) -> impl IntoResponse {
+    //destructure the request body
+    let User {
+        email, password, ..
+    } = payload;
+    Json(json!({
+        "email":email,
+        "password": password
+    }))
+}
+
+///reset user password
+pub async fn reset_password(Json(payload): Json<User>) -> impl IntoResponse {
+    //destructure the request body
+    let User { email, .. } = payload;
+    Json(json!({
+        "email":email,
+    }))
+}

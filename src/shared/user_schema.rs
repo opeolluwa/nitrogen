@@ -12,4 +12,5 @@ pub struct User {
     pub username: Option<String>,
     #[serde(rename = "phoneNumber")]
     pub phone_number: Option<String>,
+    pub password: Option<String>,
 }
