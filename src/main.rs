@@ -5,6 +5,7 @@ use std::env;
 use std::net::SocketAddr;
 
 //local modules
+// mod config;
 mod controllers;
 mod routes;
 mod shared;
@@ -28,7 +29,7 @@ async fn main() -> mongodb::error::Result<()> {
     //mount the application routes
     let app = Router::new().nest("/v1/", routes::root::router());
 
-    //mount the server
+    //mount the server to an ip address
     let port = env::var("PORT")
         .ok()
         .and_then(|s| s.parse().ok())
@@ -36,6 +37,7 @@ async fn main() -> mongodb::error::Result<()> {
     let ip_address = SocketAddr::from(([127, 0, 0, 1], port));
     println!("Ignition started on http://{}", &ip_address);
 
+    //launch the server
     axum::Server::bind(&ip_address)
         .serve(app.into_make_service())
         .await
