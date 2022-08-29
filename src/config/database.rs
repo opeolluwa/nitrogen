@@ -1,4 +1,4 @@
-use mongodb::{options::ClientOptions, Client, Database};
+use mongodb::{options::ClientOptions, Client};
 use std::env;
 
 pub async fn mongodb() -> mongodb::Database {
