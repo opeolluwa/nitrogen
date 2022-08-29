@@ -4,9 +4,10 @@ use crate::{
 };
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use bcrypt::{hash, verify};
+use jsonwebtoken::{encode, EncodingKey, Header};
 use mongodb::bson::doc;
 use serde_json::json;
-// use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey};
+use std::env;
 
 ///create a new user
 pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
@@ -51,6 +52,7 @@ pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
 ///login a new user
 pub async fn login(Json(payload): Json<User>) -> impl IntoResponse {
     //destructure the request body
+    //TODO::validate the payload
     let User {
         email,
         password: user_password,
@@ -87,23 +89,35 @@ pub async fn login(Json(payload): Json<User>) -> impl IntoResponse {
     };
 
     //check for correctness of password, if correct send access token
-    let _jwt_payload = JwtSchema { email, firstname };
-
-    //compare the password
     let is_correct_password = verify(user_password, &password);
     // println!("the password result is {:?}", correct_password);
     match is_correct_password {
-        Ok(_) => (
-            //encrypt the user data
-            StatusCode::CREATED,
-            Json(json!({
-                "success":true,
-                "message":"user successfully created".to_string(),
-                "data":json!({
-                    "token":"tt"
-                })
-            })),
-        ),
+        Ok(_) => {
+            //:encrypt the user data
+            let jwt_payload = JwtSchema { email, firstname };
+            let jwt_secret = env::var("JWT_SECRET").unwrap_or(
+                "Ux6qlTEMdT0gSLq9GHp812R9XP3KSGSWcyrPpAypsTpRHxvLqYkeYNYfRZjL9".to_string(),
+            );
+            let token = encode(
+                &Header::default(),
+                &jwt_payload,
+                &EncodingKey::from_secret(jwt_secret.as_bytes()),
+            )
+            .unwrap();
+
+            //send the response
+            (
+                StatusCode::OK,
+                Json(json!({
+                    "success":true,
+                    "message":"user successfully created".to_string(),
+                    "data":json!({
+                        "token":token,
+                        "type":"Bearer".to_string()
+                    })
+                })),
+            )
+        }
         Err(_) => (
             StatusCode::UNAUTHORIZED,
             Json(json!({
