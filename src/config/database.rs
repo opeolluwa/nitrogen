@@ -1,7 +1,7 @@
-use mongodb::{options::ClientOptions, Client};
+use mongodb::{options::ClientOptions, Client, Database};
 use std::env;
 
-pub async fn mongodb() -> mongodb::Client {
+pub async fn mongodb() -> mongodb::Database {
     let database_uri = env::var("DATABASE_URI").expect("error reading database URI");
     let database_name = env::var("DATABASE_NAME").expect("error reading database name");
 
@@ -12,9 +12,7 @@ pub async fn mongodb() -> mongodb::Client {
 
     let database_client =
         Client::with_options(database_client_options).expect("unable to connect to db");
-    database_client.database(&database_name);
-    println!("Successfully Connected to Database.");
-
-    //return database client
-    database_client
+    let database = database_client.database(&database_name);
+    //return database
+    database
 }
