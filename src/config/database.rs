@@ -1,4 +1,4 @@
-use mongodb::{bson::doc, options::ClientOptions, Client};
+use mongodb::{options::ClientOptions, Client};
 use std::env;
 
 pub async fn mongodb() -> mongodb::Client {
@@ -13,6 +13,8 @@ pub async fn mongodb() -> mongodb::Client {
     let database_client =
         Client::with_options(database_client_options).expect("unable to connect to db");
     database_client.database(&database_name);
+    println!("Successfully Connected to Database.");
 
+    //return database client
     database_client
 }

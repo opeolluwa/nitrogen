@@ -1,6 +1,5 @@
 use axum::Router;
 use dotenv;
-use mongodb::{bson::doc, options::ClientOptions, Client};
 use std::env;
 use std::net::SocketAddr;
 
@@ -14,26 +13,10 @@ mod shared;
 async fn main() -> mongodb::error::Result<()> {
     //try reading the environment variables
     dotenv::dotenv().expect("Failed to read .env file");
-    config::database::mongodb()
-        // .run_command(doc! {"ping": 1}, None)
-        .await;
-    // .expect("err connecting  to database");
-
-    /*    let database_uri = env::var("DATABASE_URI").expect("error reading database URI");
-       let database_name = env::var("DATABASE_NAME").expect("error reading database name");
-
-       // Get a handle to the cluster  and Ping the server to see if you can connect to the cluster
-       let database_client_options = ClientOptions::parse(&database_uri).await?;
-       let database_client = Client::with_options(database_client_options)?;
-       database_client
-           .database(&database_name)
-           .run_command(doc! {"ping": 1}, None)
-           .await?;
-       println!("Successfully Connected to Database.");
-    */
-    //mount the application routes
+    //connect to database
+    config::database::mongodb().await;
+    //mount the app routes
     let app = Router::new().nest("/v1/", routes::root::router());
-
     //mount the server to an ip address
     let port = env::var("PORT")
         .ok()
@@ -41,7 +24,6 @@ async fn main() -> mongodb::error::Result<()> {
         .unwrap_or(8052);
     let ip_address = SocketAddr::from(([127, 0, 0, 1], port));
     println!("Ignition started on http://{}", &ip_address);
-
     //launch the server
     axum::Server::bind(&ip_address)
         .serve(app.into_make_service())
