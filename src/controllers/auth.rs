@@ -38,7 +38,7 @@ pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
     };
 
     //create new user
-    collection.insert_one(user, None).await.unwrap();
+    collection.insert_one(&user, None).await.unwrap();
     (
         StatusCode::OK,
         Json(json!({

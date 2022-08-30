@@ -1,4 +1,4 @@
-use axum::Router;
+use axum::{routing::get, Router};
 use dotenv;
 use std::env;
 use std::net::SocketAddr;
@@ -15,8 +15,11 @@ async fn main() -> mongodb::error::Result<()> {
     dotenv::dotenv().expect("Failed to read .env file");
     //connect to database
     config::database::mongodb().await;
+    println!("Successfully connected to database");
     //mount the app routes
-    let app = Router::new().nest("/v1/", routes::root::router());
+    let app = Router::new()
+        .nest("/v1/", routes::root::router())
+        .route("/", get(|| async { "Nitrogen" }));
     //mount the server to an ip address
     let port = env::var("PORT")
         .ok()
