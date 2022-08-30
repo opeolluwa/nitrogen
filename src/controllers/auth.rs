@@ -8,7 +8,7 @@ use jsonwebtoken::{encode, EncodingKey, Header};
 use mongodb::bson::doc;
 use serde_json::json;
 use std::env;
-
+use validator::Validate;
 ///create a new user
 pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
     //destructure the request
@@ -20,6 +20,11 @@ pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
         ..
     } = payload;
     let database = mongodb().await;
+
+    /*   match payload.validate() {
+        Ok(_) => payload,
+        Err(_) => return _,
+    }; */
     let collection = database.collection::<User>("user");
 
     //TODO: validate the user object, first check if user with email already exists
@@ -51,8 +56,9 @@ pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
 
 ///login a new user
 pub async fn login(Json(payload): Json<User>) -> impl IntoResponse {
-    //destructure the request body
     //TODO::validate the payload
+
+    //destructure the request body
     let User {
         email,
         password: user_password,
