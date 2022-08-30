@@ -20,11 +20,6 @@ pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
         ..
     } = payload;
     let database = mongodb().await;
-
-    /*   match payload.validate() {
-        Ok(_) => payload,
-        Err(_) => return _,
-    }; */
     let collection = database.collection::<User>("user");
 
     //TODO: validate the user object, first check if user with email already exists
@@ -32,6 +27,26 @@ pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
     /*  if assert_eq!(firstname.is_empty(), true) {
         error.push("Firstname cannot be empty".to_string());
     } */
+
+    /*
+     * find user by email
+     * if user already exist send error message
+     * else create a new account with provided details
+     */
+    let user_already_exists = collection
+        .find_one(doc! { "email": &email }, None)
+        .await
+        .unwrap();
+    if let Some(_) = user_already_exists {
+        return (
+            StatusCode::CONFLICT,
+            Json(json!({
+                "success":false,
+                "message":"a user with provided mail already exits",
+                "data":None::<User>
+            })),
+        );
+    }
 
     //construct a new user form the validated request payload
     let hashed_password = hash(password, 12).unwrap();
@@ -45,19 +60,37 @@ pub async fn sign_up(Json(payload): Json<User>) -> impl IntoResponse {
     //create new user
     collection.insert_one(&user, None).await.unwrap();
     (
-        StatusCode::OK,
+        StatusCode::CREATED,
         Json(json!({
             "success":true,
             "message":"user successfully created".to_string(),
-            // "data":Some(&user)
+            "data":None::<User>
         })),
     )
 }
 
 ///login a new user
 pub async fn login(Json(payload): Json<User>) -> impl IntoResponse {
-    //TODO::validate the payload
+    //:validate the payload
+    let mut request_body_errors: Vec<String> = vec![];
+    if payload.password.is_empty() {
+        request_body_errors.push("password cannot be blank".to_string());
+    }
 
+    if payload.email.is_empty() {
+        request_body_errors.push("no email was provided ".to_string());
+    }
+
+    if request_body_errors.len() >= 1 {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(json!({
+                "success":false,
+            "message":"badly formatted request",
+            "errors":request_body_errors
+            })),
+        );
+    }
     //destructure the request body
     let User {
         email,
