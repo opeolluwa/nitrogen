@@ -2,7 +2,7 @@ use axum::{routing::get, Router};
 use dotenv;
 use std::env;
 use std::net::SocketAddr;
-
+use tower_http::cors::{Any, CorsLayer};
 //local modules
 mod config;
 mod controllers;
@@ -16,10 +16,14 @@ async fn main() -> mongodb::error::Result<()> {
     //connect to database
     config::database::mongodb().await;
     println!("Successfully connected to database");
+
+    //initialize cors layer
+    let cors = CorsLayer::new().allow_origin(Any);
     //mount the app routes
     let app = Router::new()
         .nest("/v1/", routes::root::router())
-        .route("/", get(|| async { "Nitrogen" }));
+        .route("/", get(|| async { "Nitrogen" }))
+        .layer(cors);
     //mount the server to an ip address
     let port = env::var("PORT")
         .ok()
